@@ -19,6 +19,8 @@ namespace hinode
 
 		HVKDevice& HVKDevice::operator=(HVKDevice&& right)noexcept
 		{
+			this->release();
+
 			this->mDevice = right.mDevice;
 
 			right.mDevice = nullptr;
@@ -47,6 +49,12 @@ namespace hinode
 				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKDevice, create, result)
 					<< "デバイスの作成に失敗";
 			}
+		}
+
+		VkResult HVKDevice::waitIdle()noexcept
+		{
+			assert(this->isGood());
+			return vkDeviceWaitIdle(this->mDevice);
 		}
 
 		bool HVKDevice::isGood()const noexcept

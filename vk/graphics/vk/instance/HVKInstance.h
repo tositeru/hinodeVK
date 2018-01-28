@@ -16,6 +16,13 @@ namespace hinode
 			HVKInstance& operator=(HVKInstance& right)noexcept = delete;
 
 		public:
+			/// @brief グローバルな拡張プロパティを列挙する
+			/// @param[in] layerName 対象となるレイヤー名. nullptrならVulkan実装か明示的に有効化されているレイヤーの拡張プロパティを返す
+			/// @param[in] propCount 0なら存在するプロパティをすべて列挙する
+			/// @retval std::vector<VkExtensionProperties>
+			static std::vector<VkExtensionProperties> sEnumerateExtensionProperties(const char* layerName = nullptr, uint32_t propCount = 0);
+
+		public:
 			HVKInstance();
 			HVKInstance(HVKInstance&& right)noexcept;
 			HVKInstance& operator=(HVKInstance&& right)noexcept;
@@ -24,7 +31,7 @@ namespace hinode
 			void release()noexcept override;
 
 			/// @brief 作成
-			/// @param[in] pInfo VkInstanceCreateInfoを継承したHVKInstanceCreateInfo構造体を用意しているので
+			/// @param[in] pInfo VkInstanceCreateInfoを継承したHVKInstanceCreateInfo構造体を用意しているのでそちらを使用してください
 			/// @exception HVKException
 			void create(VkInstanceCreateInfo* pInfo);
 
@@ -33,6 +40,12 @@ namespace hinode
 			/// @param[in] count
 			/// @retval bool
 			bool enumeratePhysicalDevices(std::vector<VkPhysicalDevice>& out, uint32_t count)noexcept;
+
+			/// @brief 拡張機能を提供する関数などを取得するための関数
+			/// この関数で返された関数ポインタの第1引数はこのインスタンスのVkInstanceか、その子でないといけない
+			/// @param[in] name 
+			/// @retval PFN_vkVoidFunction
+			PFN_vkVoidFunction getProcAddr(const char* name)noexcept;
 
 		public:
 			bool isGood()const noexcept;
@@ -48,10 +61,14 @@ namespace hinode
 	{
 		struct HVKInstanceCreateInfo : public VkInstanceCreateInfo
 		{
+			std::vector<const char*> extensionNames;
+
 			HVKInstanceCreateInfo()noexcept;
 			HVKInstanceCreateInfo(VkApplicationInfo* pAppInfo)noexcept;
 
 			HVKInstanceCreateInfo& setEnableExtensionInfo(const char** names, uint32_t extensionCount)noexcept;
+			HVKInstanceCreateInfo& setEnableExtensionInfo(const VkExtensionProperties* props, uint32_t extensionCount)noexcept;
+
 			HVKInstanceCreateInfo& setEnableLayerCount(const char** names, uint32_t layerCount)noexcept;
 		};
 	}

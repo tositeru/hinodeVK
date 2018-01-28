@@ -22,6 +22,8 @@ namespace hinode
 
 			void create(VkPhysicalDevice physicalDevice, VkDeviceCreateInfo* pInfo);
 
+			VkResult waitIdle()noexcept;
+
 		public:
 			bool isGood()const noexcept;
 			VkDevice device()noexcept;

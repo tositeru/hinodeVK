@@ -8,17 +8,30 @@ namespace hinode
 {
 	namespace graphics
 	{
+		std::vector<VkExtensionProperties> HVKInstance::sEnumerateExtensionProperties(const char* layerName, uint32_t propCount)
+		{
+			if (propCount == 0) {
+				vkEnumerateInstanceExtensionProperties(layerName, &propCount, nullptr);
+			}
+			std::vector<VkExtensionProperties> ret(propCount);
+			vkEnumerateInstanceExtensionProperties(layerName, &propCount, ret.data());
+			return ret;
+		}
+
 		HVKInstance::HVKInstance()
 			: mInstance(nullptr)
 		{ }
 
 		HVKInstance::HVKInstance(HVKInstance&& right)noexcept
+			: mInstance(right.mInstance)
 		{
-			*this = std::move(right);
+			right.mInstance = nullptr;
 		}
 
 		HVKInstance& HVKInstance::operator=(HVKInstance&& right)noexcept
 		{
+			this->release();
+
 			this->mInstance = right.mInstance;
 
 			right.mInstance = nullptr;
@@ -63,6 +76,15 @@ namespace hinode
 			return result == VK_SUCCESS;
 		}
 
+		PFN_vkVoidFunction HVKInstance::getProcAddr(const char* name)noexcept
+		{
+			assert(this->isGood());
+			if (name == nullptr) {
+				return nullptr;
+			}
+			return vkGetInstanceProcAddr(this->mInstance, name);
+		}
+
 		bool HVKInstance::isGood()const noexcept
 		{
 			return nullptr != this->mInstance;
@@ -99,8 +121,25 @@ namespace hinode
 
 		HVKInstanceCreateInfo& HVKInstanceCreateInfo::setEnableExtensionInfo(const char** names, uint32_t extensionCount)noexcept
 		{
-			this->enabledExtensionCount = extensionCount;
-			this->ppEnabledExtensionNames = names;
+			this->extensionNames.resize(extensionCount);
+			this->extensionNames.shrink_to_fit();
+			for (uint32_t i = 0; i < extensionCount; ++i) {
+				this->extensionNames[i] = names[i];
+			}
+			this->enabledExtensionCount = this->extensionNames.size();
+			this->ppEnabledExtensionNames = this->extensionNames.data();
+			return *this;
+		}
+
+		HVKInstanceCreateInfo& HVKInstanceCreateInfo::setEnableExtensionInfo(const VkExtensionProperties* props, uint32_t extensionCount)noexcept
+		{
+			this->extensionNames.resize(extensionCount);
+			this->extensionNames.shrink_to_fit();
+			for (uint32_t i = 0; i < extensionCount; ++i) {
+				this->extensionNames[i] = props[i].extensionName;
+			}
+			this->enabledExtensionCount = this->extensionNames.size();
+			this->ppEnabledExtensionNames = this->extensionNames.data();
 			return *this;
 		}
 

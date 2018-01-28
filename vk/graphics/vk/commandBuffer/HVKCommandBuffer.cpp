@@ -14,12 +14,19 @@ namespace hinode
 		{}
 
 		HVKCommandBuffer::HVKCommandBuffer(HVKCommandBuffer&& right)noexcept
+			: mCmdBuffer(right.mCmdBuffer)
+			, mParentDevice(right.mParentDevice)
+			, mParentPool(right.mParentPool)
 		{
-			*this = std::move(right);
+			right.mCmdBuffer = nullptr;
+			right.mParentDevice = nullptr;
+			right.mParentPool = nullptr;
 		}
 
 		HVKCommandBuffer& HVKCommandBuffer::operator=(HVKCommandBuffer&& right)noexcept
 		{
+			this->release();
+
 			this->mCmdBuffer = right.mCmdBuffer;
 			this->mParentDevice = right.mParentDevice;
 			this->mParentPool = right.mParentPool;

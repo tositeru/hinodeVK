@@ -23,7 +23,7 @@
     <ProjectGuid>{7A0C7871-D865-45FB-8F88-11F69FFCA5C8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>vk</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -172,8 +172,12 @@
     <ClInclude Include="graphics\vk\common\MetaProgramingUtility.h" />
     <ClInclude Include="graphics\vk\common\Pimpl.h" />
     <ClInclude Include="graphics\vk\HVKInterface.h" />
+    <ClInclude Include="graphics\vk\image\HVKImage.h" />
     <ClInclude Include="graphics\vk\instance\HVKInstance.h" />
     <ClInclude Include="graphics\vk\device\HVKDevice.h" />
+    <ClInclude Include="graphics\vk\KHR\DefineKHRPlatform.h" />
+    <ClInclude Include="graphics\vk\KHR\surface\HVKSurfaceKHR.h" />
+    <ClInclude Include="graphics\vk\KHR\swapChain\HVKSwapChainKHR.h" />
     <ClInclude Include="graphics\vk\physicalDevice\HVKPhysicalDevice.h" />
     <ClInclude Include="graphics\vk\utility\winapi\CheckMemoryLeak.h" />
     <ClInclude Include="graphics\vk\utility\winapi\KeyObserver.h" />
@@ -185,8 +189,11 @@
     <ClCompile Include="graphics\vk\commandPool\HVKCommandPool.cpp" />
     <ClCompile Include="graphics\vk\common\HVKException.cpp" />
     <ClCompile Include="graphics\vk\common\Log.cpp" />
+    <ClCompile Include="graphics\vk\image\HVKImage.cpp" />
     <ClCompile Include="graphics\vk\instance\HVKInstance.cpp" />
     <ClCompile Include="graphics\vk\device\HVKDevice.cpp" />
+    <ClCompile Include="graphics\vk\KHR\surface\HVKSurfaceKHR.cpp" />
+    <ClCompile Include="graphics\vk\KHR\swapChain\HVKSwapChainKHR.cpp" />
     <ClCompile Include="graphics\vk\physicalDevice\HVKPhysicalDevice.cpp" />
     <ClCompile Include="graphics\vk\utility\winapi\CheckMemoryLeak.cpp" />
     <ClCompile Include="graphics\vk\utility\winapi\Window.cpp" />

@@ -13,12 +13,17 @@ namespace hinode
 		{ }
 
 		HVKCommandPool::HVKCommandPool(HVKCommandPool&& right)noexcept
+			: mPool(right.mPool)
+			, mParentDevice(right.mParentDevice)
 		{
-			*this = std::move(right);
+			right.mPool = nullptr;
+			right.mParentDevice = nullptr;
 		}
 
 		HVKCommandPool& HVKCommandPool::operator=(HVKCommandPool&& right)noexcept
 		{
+			this->release();
+
 			this->mPool = right.mPool;
 			this->mParentDevice = right.mParentDevice;
 
