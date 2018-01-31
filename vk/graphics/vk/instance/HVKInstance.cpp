@@ -126,7 +126,7 @@ namespace hinode
 			for (uint32_t i = 0; i < extensionCount; ++i) {
 				this->extensionNames[i] = names[i];
 			}
-			this->enabledExtensionCount = this->extensionNames.size();
+			this->enabledExtensionCount = static_cast<uint32_t>(this->extensionNames.size());
 			this->ppEnabledExtensionNames = this->extensionNames.data();
 			return *this;
 		}
@@ -138,15 +138,22 @@ namespace hinode
 			for (uint32_t i = 0; i < extensionCount; ++i) {
 				this->extensionNames[i] = props[i].extensionName;
 			}
-			this->enabledExtensionCount = this->extensionNames.size();
+			this->enabledExtensionCount = static_cast<uint32_t>(this->extensionNames.size());
 			this->ppEnabledExtensionNames = this->extensionNames.data();
 			return *this;
 		}
 
-		HVKInstanceCreateInfo& HVKInstanceCreateInfo::setEnableLayerCount(const char** names, uint32_t layerCount)noexcept
+		HVKInstanceCreateInfo& HVKInstanceCreateInfo::setEnableLayerNames(const char** names, uint32_t layerCount)noexcept
 		{
-			this->enabledLayerCount = layerCount;
-			this->ppEnabledLayerNames = names;
+			this->layerNames.resize(layerCount);
+			this->layerNames.shrink_to_fit();
+
+			for (uint32_t i = 0; i < layerCount; ++i) {
+				this->layerNames[i] = names[i];
+			}
+			this->enabledLayerCount = static_cast<uint32_t>(this->layerNames.size());
+			this->ppEnabledLayerNames = this->layerNames.data();
+
 			return *this;
 		}
 	}

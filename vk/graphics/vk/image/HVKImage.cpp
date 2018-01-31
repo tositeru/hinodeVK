@@ -35,9 +35,12 @@ namespace hinode
 			this->release();
 			this->mImage = right.mImage;
 			this->mParentDevice = right.mParentDevice;
+			this->mViews = right.mViews;
 
 			right.mImage = nullptr;
 			right.mParentDevice = nullptr;
+			right.mViews.clear();
+			right.mViews.shrink_to_fit();
 			return *this;
 		}
 
@@ -49,6 +52,12 @@ namespace hinode
 		void HVKImage::release()noexcept
 		{
 			if (this->mImage != nullptr) {
+				for (auto& view : this->mViews) {
+					vkDestroyImageView(this->mParentDevice, view, this->allocationCallbacksPointer());
+				}
+				this->mViews.clear();
+				this->mViews.shrink_to_fit();
+
 				vkDestroyImage(this->mParentDevice, this->mImage, this->allocationCallbacksPointer());
 				this->mParentDevice = nullptr;
 				this->mImage = nullptr;
@@ -135,14 +144,17 @@ namespace hinode
 			this->pNext = nullptr;
 		}
 
+		//
+		//	struct HVKImageViewCreateInfo
+		//
 
 		HVKImageViewCreateInfo::HVKImageViewCreateInfo()
-			: HVKImageViewCreateInfo(nullptr, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_UNDEFINED)
+			: HVKImageViewCreateInfo(VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_UNDEFINED)
 		{ }
 
-		HVKImageViewCreateInfo::HVKImageViewCreateInfo(VkImage image, VkImageViewType viewType, VkFormat format)
+		HVKImageViewCreateInfo::HVKImageViewCreateInfo(VkImageViewType viewType, VkFormat format)
 		{
-			this->image = image;
+			this->image = nullptr;
 			this->viewType = viewType;
 			this->format = format;
 

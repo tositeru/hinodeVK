@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <array>
+#include <vector>
+
 #include "../HVKInterface.h"
 #include "../allocationCallbacks/HVKAllocationCallbacks.h"
 
@@ -46,9 +49,12 @@ namespace hinode
 	{
 		struct HVKDeviceQueueCreateInfo : public VkDeviceQueueCreateInfo
 		{
+			std::vector<float> queuePriorities;
+
 			HVKDeviceQueueCreateInfo();
 			HVKDeviceQueueCreateInfo(uint32_t familyIndex, uint32_t count);
+
+			HVKDeviceQueueCreateInfo& setQueuePriorities(const std::vector<float>& priorities);
 		};
 	}
-
 }

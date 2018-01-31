@@ -62,6 +62,7 @@ namespace hinode
 		struct HVKInstanceCreateInfo : public VkInstanceCreateInfo
 		{
 			std::vector<const char*> extensionNames;
+			std::vector<const char*> layerNames;
 
 			HVKInstanceCreateInfo()noexcept;
 			HVKInstanceCreateInfo(VkApplicationInfo* pAppInfo)noexcept;
@@ -69,7 +70,7 @@ namespace hinode
 			HVKInstanceCreateInfo& setEnableExtensionInfo(const char** names, uint32_t extensionCount)noexcept;
 			HVKInstanceCreateInfo& setEnableExtensionInfo(const VkExtensionProperties* props, uint32_t extensionCount)noexcept;
 
-			HVKInstanceCreateInfo& setEnableLayerCount(const char** names, uint32_t layerCount)noexcept;
+			HVKInstanceCreateInfo& setEnableLayerNames(const char** names, uint32_t layerCount)noexcept;
 		};
 	}
 

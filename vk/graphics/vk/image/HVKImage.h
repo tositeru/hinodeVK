@@ -65,7 +65,7 @@ namespace hinode
 		struct HVKImageViewCreateInfo : public VkImageViewCreateInfo
 		{
 			HVKImageViewCreateInfo();
-			HVKImageViewCreateInfo(VkImage image, VkImageViewType viewType, VkFormat format);
+			HVKImageViewCreateInfo(VkImageViewType viewType, VkFormat format);
 		};
 	}
 }

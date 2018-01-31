@@ -34,6 +34,8 @@ namespace hinode
 
 			std::vector<VkSparseImageFormatProperties> getSparseImageFormatProperties(VkFormat format, VkImageType type, VkSampleCountFlagBits samples, VkImageUsageFlags usage, VkImageTiling tiling)noexcept;
 
+			std::vector<VkExtensionProperties> getDeviceExtensionProperties(const char* layerName=nullptr);
+
 		public:
 			bool isGood()const noexcept override;
 

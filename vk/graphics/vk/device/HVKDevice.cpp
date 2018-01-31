@@ -78,6 +78,7 @@ namespace hinode
 		{
 			this->sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 			this->pNext = nullptr;
+			this->flags = 0;
 
 			this->queueCreateInfoCount = queueInfoCount;
 			this->pQueueCreateInfos = pQueueInfos;
@@ -95,18 +96,27 @@ namespace hinode
 	namespace graphics
 	{
 		HVKDeviceQueueCreateInfo::HVKDeviceQueueCreateInfo()
-			: HVKDeviceQueueCreateInfo(0, 0)
+			: HVKDeviceQueueCreateInfo(0, 1)
 		{}
 
 		HVKDeviceQueueCreateInfo::HVKDeviceQueueCreateInfo(uint32_t familyIndex, uint32_t count)
 		{
+			this->queueCount = count;
+			this->queueFamilyIndex = familyIndex;
+			this->pQueuePriorities = nullptr;
+
 			//ŒÅ’è’l
 			this->sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			this->pNext = nullptr;
 			this->flags = 0;
+		}
 
-			this->queueCount = count;
-			this->queueFamilyIndex = familyIndex;
+		HVKDeviceQueueCreateInfo& HVKDeviceQueueCreateInfo::setQueuePriorities(const std::vector<float>& priorities)
+		{
+			this->queuePriorities = priorities;
+			this->pQueuePriorities = this->queuePriorities.data();
+			this->queueCount = static_cast<decltype(queueCount)>(this->queuePriorities.size());
+			return *this;
 		}
 	}
 }

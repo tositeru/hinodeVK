@@ -121,6 +121,24 @@ namespace hinode
 			return props;
 		}
 
+		std::vector<VkExtensionProperties> HVKPhysicalDevice::getDeviceExtensionProperties(const char* layerName)
+		{
+			assert(this->isGood());
+
+			uint32_t deviceExtensionCount = 0;
+			auto ret = vkEnumerateDeviceExtensionProperties(this->mDevice, layerName, &deviceExtensionCount, nullptr);
+			if (VK_SUCCESS != ret) {
+				return {};
+			}
+
+			std::vector<VkExtensionProperties> deviceProps(deviceExtensionCount);
+			ret = vkEnumerateDeviceExtensionProperties(this->mDevice, layerName, &deviceExtensionCount, deviceProps.data());
+			if (VK_SUCCESS != ret) {
+				return {};
+			}
+			return deviceProps;
+		}
+
 		bool HVKPhysicalDevice::isGood()const noexcept
 		{
 			return nullptr != this->mDevice;
