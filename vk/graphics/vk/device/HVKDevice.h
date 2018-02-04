@@ -43,6 +43,7 @@ namespace hinode
 		{
 			HVKDeviceCreateInfo();
 			HVKDeviceCreateInfo(VkDeviceQueueCreateInfo* pQueueInfos, uint32_t queueInfoCount);
+
 		};
 	}
 	namespace graphics
@@ -50,11 +51,13 @@ namespace hinode
 		struct HVKDeviceQueueCreateInfo : public VkDeviceQueueCreateInfo
 		{
 			std::vector<float> queuePriorities;
+			uint32_t presentQueueFamilyIndex;
 
 			HVKDeviceQueueCreateInfo();
 			HVKDeviceQueueCreateInfo(uint32_t familyIndex, uint32_t count);
 
 			HVKDeviceQueueCreateInfo& setQueuePriorities(const std::vector<float>& priorities);
+			HVKDeviceQueueCreateInfo& setQueueFamilyIndexAndPresentQueueIndex(const std::vector<VkQueueFamilyProperties>& queueFamilyProps, const std::vector<bool>& supportPresentFlags);
 		};
 	}
 }

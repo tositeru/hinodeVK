@@ -63,6 +63,16 @@ namespace hinode
 #else
 #error DefineKHRPlatform.hで環境を指定してください
 #endif
+			/// @brief 指定したVkPhysicalDeviceのキューファミリーがこの画面に表示することが可能かを返す
+			/// @param[in] gpu
+			/// @param[in] queueFamilyIndex
+			/// @retval bool
+			bool isSuppportPresent(VkPhysicalDevice gpu, uint32_t queueFamilyIndex);
+
+			/// @brief gpuの全キューファミリーの画面の表示の可能性を返す
+			/// @param[in] gpu
+			/// @retval std::vector<bool>
+			std::vector<bool> getSupportPresentOfAllQueueFamily(VkPhysicalDevice gpu);
 
 		public:
 			bool isGood()const noexcept;

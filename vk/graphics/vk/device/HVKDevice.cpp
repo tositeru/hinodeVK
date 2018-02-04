@@ -118,5 +118,32 @@ namespace hinode
 			this->queueCount = static_cast<decltype(queueCount)>(this->queuePriorities.size());
 			return *this;
 		}
+
+		HVKDeviceQueueCreateInfo& HVKDeviceQueueCreateInfo::setQueueFamilyIndexAndPresentQueueIndex(const std::vector<VkQueueFamilyProperties>& queueFamilyProps, const std::vector<bool>& supportPresentFlags)
+		{
+			this->queueFamilyIndex = UINT32_MAX;
+			this->presentQueueFamilyIndex = UINT32_MAX;
+			for (auto i = 0u; i < queueFamilyProps.size(); ++i) {
+				auto& prop = queueFamilyProps[i];
+				if (prop.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+					if (this->queueFamilyIndex) this->queueFamilyIndex = i;
+
+					if (supportPresentFlags[i]) {
+						this->queueFamilyIndex = i;
+						this->presentQueueFamilyIndex = i;
+						break;
+					}
+				}
+			}
+			if (this->presentQueueFamilyIndex == UINT32_MAX) {
+				for (auto i = 0u; i < supportPresentFlags.size(); ++i) {
+					if (supportPresentFlags[i]) {
+						this->presentQueueFamilyIndex = i;
+						break;
+					}
+				}
+			}
+			return *this;
+		}
 	}
 }

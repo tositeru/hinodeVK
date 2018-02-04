@@ -125,6 +125,29 @@ namespace hinode
 #error DefineKHRPlatform.h‚ÅŠÂ‹«‚ðŽw’è‚µ‚Ä‚­‚¾‚³‚¢
 #endif
 
+		bool HVKSurfaceKHR::isSuppportPresent(VkPhysicalDevice gpu, uint32_t queueFamilyIndex)
+		{
+			assert(this->isGood() && gpu != nullptr);
+
+			VkBool32 result = false;
+			vkGetPhysicalDeviceSurfaceSupportKHR(gpu, queueFamilyIndex, this->mSurface, &result);
+			return result == VK_TRUE;
+		}
+
+		std::vector<bool> HVKSurfaceKHR::getSupportPresentOfAllQueueFamily(VkPhysicalDevice gpu)
+		{
+			uint32_t queueFamilyCount;
+			vkGetPhysicalDeviceQueueFamilyProperties(gpu, &queueFamilyCount, nullptr);
+
+			std::vector<bool> result(queueFamilyCount);
+			for (auto i = 0u; i < queueFamilyCount; ++i) {
+				VkBool32 b;
+				vkGetPhysicalDeviceSurfaceSupportKHR(gpu, i, this->mSurface, &b);
+				result[i] = b == VK_TRUE;
+			}
+			return result;
+		}
+
 		bool HVKSurfaceKHR::isGood()const noexcept
 		{
 			return this->mSurface != nullptr;

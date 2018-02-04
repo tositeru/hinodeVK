@@ -46,6 +46,21 @@ namespace hinode
 			return result;
 		}
 
+		std::vector<VkPresentModeKHR> HVKSwapChainKHR::sGetPresentModes(VkPhysicalDevice gpu, VkSurfaceKHR surface)
+		{
+			uint32_t presentCount = 0;
+			auto ret = vkGetPhysicalDeviceSurfacePresentModesKHR(gpu, surface, &presentCount, nullptr);
+			if (ret != VK_SUCCESS) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapChainKHR, sGetPresentModes, ret) << "‘Î‰ž‚µ‚Ä‚¢‚éVkPresentModeKHR‚ÌŒÂ”‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½B";
+			}
+			std::vector<VkPresentModeKHR> presentModes(presentCount);
+			ret = vkGetPhysicalDeviceSurfacePresentModesKHR(gpu, surface, &presentCount, presentModes.data());
+			if (ret != VK_SUCCESS) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapChainKHR, sGetPresentModes, ret) << "VkPresentModeKHR‚ÌŽæ“¾‚ÉŽ¸”s‚µ‚Ü‚µ‚½B";
+			}
+			return presentModes;
+		}
+
 		HVKSwapChainKHR::HVKSwapChainKHR()
 			: mSwapChain(nullptr)
 			, mParentDevice(nullptr)
@@ -129,10 +144,16 @@ namespace hinode
 
 	namespace graphics
 	{
-		HVKSwapchainCreateInfoKHR HVKSwapchainCreateInfoKHR::sCreate(std::vector<VkSurfaceFormatKHR>& outSurfaceFormats, VkSurfaceCapabilitiesKHR& outSurfaceCapabilities, VkPhysicalDevice gpu, VkSurfaceKHR surface)
+		HVKSwapchainCreateInfoKHR HVKSwapchainCreateInfoKHR::sCreate(
+			std::vector<VkSurfaceFormatKHR>& outSurfaceFormats,
+			VkSurfaceCapabilitiesKHR& outSurfaceCapabilities,
+			std::vector<VkPresentModeKHR>& outPresentModes,
+			VkPhysicalDevice gpu,
+			VkSurfaceKHR surface)
 		{
 			outSurfaceFormats = HVKSwapChainKHR::sGetPhysicalDeviceSurfaceFormats(gpu, surface);
 			outSurfaceCapabilities = HVKSwapChainKHR::sGetPhysicalDeviceSurfaceCapabilities(gpu, surface);
+			outPresentModes = HVKSwapChainKHR::sGetPresentModes(gpu, surface);
 
 			HVKSwapchainCreateInfoKHR result;
 			result.surface = surface;
@@ -144,6 +165,8 @@ namespace hinode
 			if (VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR == result.compositeAlpha) {
 				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapchainCreateInfoKHR, sCreate, VK_INCOMPLETE) << "compositeAlpha‚ÌÝ’è‚ÉŽ¸”s";
 			}
+			result.presentMode = outPresentModes[0];
+
 			return result;
 		}
 

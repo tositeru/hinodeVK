@@ -31,6 +31,8 @@ namespace hinode
 
 			static VkSurfaceCapabilitiesKHR sGetPhysicalDeviceSurfaceCapabilities(VkPhysicalDevice gpu, VkSurfaceKHR surface);
 
+			static std::vector<VkPresentModeKHR> sGetPresentModes(VkPhysicalDevice gpu, VkSurfaceKHR surface);
+
 		public:
 			HVKSwapChainKHR();
 			HVKSwapChainKHR(HVKSwapChainKHR&& right)noexcept;
@@ -75,11 +77,12 @@ namespace hinode
 			/// @brief VkSwapChainKHRの作成にはいくつか制限事項があるので、VkSwapchainCreateInfoKHRを設定するにあたって必要となるデータも一緒に作成するよう強制するために作成
 			/// @param[out] outSurfaceFormats
 			/// @param[out] outSurfaceCapabilities
+			/// @param[out] outPresentModes
 			/// @param[in] gpu
 			/// @param[in] surface
 			/// @retval HVKSwapchainCreateInfoKHR
 			/// @exception HVKException
-			static HVKSwapchainCreateInfoKHR sCreate(std::vector<VkSurfaceFormatKHR>& outSurfaceFormats, VkSurfaceCapabilitiesKHR& outSurfaceCapabilities, VkPhysicalDevice gpu, VkSurfaceKHR surface);
+			static HVKSwapchainCreateInfoKHR sCreate(std::vector<VkSurfaceFormatKHR>& outSurfaceFormats, VkSurfaceCapabilitiesKHR& outSurfaceCapabilities, std::vector<VkPresentModeKHR>& outPresentModes, VkPhysicalDevice gpu, VkSurfaceKHR surface);
 
 		private:
 			/// @brief VkSwapChainKHRの作成にはいくつか制限事項があるので、この構造体を作成するときに必要となるものを作ることを強要するためprivateにしてます
