@@ -20,6 +20,32 @@ namespace hinode
 			}
 		}
 
+		std::vector<VkSurfaceFormatKHR> HVKSwapChainKHR::sGetPhysicalDeviceSurfaceFormats(VkPhysicalDevice gpu, VkSurfaceKHR surface)
+		{
+			VkResult ret;
+			uint32_t surfaceFormatCount = 0;
+			ret = vkGetPhysicalDeviceSurfaceFormatsKHR(gpu, surface, &surfaceFormatCount, nullptr);
+			if (ret != VK_SUCCESS) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapChainKHR, sGetPhysicalDeviceSurfaceFormats, ret) << "対応しているフォーマットの個数を取得できませんでした。";
+			}
+			std::vector<VkSurfaceFormatKHR> result(surfaceFormatCount);
+			ret = vkGetPhysicalDeviceSurfaceFormatsKHR(gpu, surface, &surfaceFormatCount, result.data());
+			if (ret != VK_SUCCESS) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapChainKHR, sGetPhysicalDeviceSurfaceFormats, ret) << "対応しているフォーマットの取得に失敗しました。";
+			}
+			return result;
+		}
+
+		VkSurfaceCapabilitiesKHR HVKSwapChainKHR::sGetPhysicalDeviceSurfaceCapabilities(VkPhysicalDevice gpu, VkSurfaceKHR surface)
+		{
+			VkSurfaceCapabilitiesKHR result;
+			auto ret = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu, surface, &result);
+			if (ret != VK_SUCCESS) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapChainKHR, sGetPhysicalDeviceSurfaceCapabilities, ret) << "VkSurfaceCapabilitiesKHRの取得に失敗しました。";
+			}
+			return result;
+		}
+
 		HVKSwapChainKHR::HVKSwapChainKHR()
 			: mSwapChain(nullptr)
 			, mParentDevice(nullptr)
@@ -103,17 +129,31 @@ namespace hinode
 
 	namespace graphics
 	{
-		HVKSwapchainCreateInfoKHR::HVKSwapchainCreateInfoKHR()noexcept
-			: HVKSwapchainCreateInfoKHR(nullptr, VK_FORMAT_B8G8R8A8_UNORM, 0u, 0u, 0)
-		{ }
-
-		HVKSwapchainCreateInfoKHR::HVKSwapchainCreateInfoKHR(VkSurfaceKHR surface, VkFormat format, uint32_t width, uint32_t height, uint32_t minImageCount)noexcept
+		HVKSwapchainCreateInfoKHR HVKSwapchainCreateInfoKHR::sCreate(std::vector<VkSurfaceFormatKHR>& outSurfaceFormats, VkSurfaceCapabilitiesKHR& outSurfaceCapabilities, VkPhysicalDevice gpu, VkSurfaceKHR surface)
 		{
-			this->surface = surface;
-			this->imageFormat = format;
-			this->imageExtent.width = width;
-			this->imageExtent.height = height;
-			this->minImageCount = minImageCount;
+			outSurfaceFormats = HVKSwapChainKHR::sGetPhysicalDeviceSurfaceFormats(gpu, surface);
+			outSurfaceCapabilities = HVKSwapChainKHR::sGetPhysicalDeviceSurfaceCapabilities(gpu, surface);
+
+			HVKSwapchainCreateInfoKHR result;
+			result.surface = surface;
+			result.imageExtent = outSurfaceCapabilities.currentExtent;
+			result.setFormat(HVKSwapchainCreateInfoKHR::sFindSurfaceFormat(outSurfaceFormats, VK_FORMAT_B8G8R8A8_UNORM));
+			result.preTransform = outSurfaceCapabilities.currentTransform;
+			result.imageArrayLayers = std::max(1u, outSurfaceCapabilities.maxImageArrayLayers);
+			result.compositeAlpha = HVKSwapchainCreateInfoKHR::sGetSupportedCompositeAlpha(outSurfaceCapabilities.supportedCompositeAlpha, HVKSwapchainCreateInfoKHR::sDefaultFlagsInSortedByPriority);
+			if (VK_COMPOSITE_ALPHA_FLAG_BITS_MAX_ENUM_KHR == result.compositeAlpha) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapchainCreateInfoKHR, sCreate, VK_INCOMPLETE) << "compositeAlphaの設定に失敗";
+			}
+			return result;
+		}
+
+		HVKSwapchainCreateInfoKHR::HVKSwapchainCreateInfoKHR()noexcept
+		{
+			this->surface = nullptr;
+			this->imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
+			this->imageExtent.width = 0;
+			this->imageExtent.height = 0;
+			this->minImageCount = 2;
 
 			this->presentMode = VK_PRESENT_MODE_FIFO_KHR;
 			this->imageArrayLayers = 1;
@@ -133,6 +173,40 @@ namespace hinode
 			this->pNext = nullptr;
 			this->flags = 0;
 		}
+
+		HVKSwapchainCreateInfoKHR& HVKSwapchainCreateInfoKHR::setFormat(const VkSurfaceFormatKHR& surfaceFormat)
+		{
+			this->imageFormat = surfaceFormat.format;
+			this->imageColorSpace = surfaceFormat.colorSpace;
+			return *this;
+		}
+
+		HVKSwapchainCreateInfoKHR& HVKSwapchainCreateInfoKHR::setQueueFamilyIndices(const std::vector<uint32_t>& indices)
+		{
+			this->queueFamilyIndices = indices;
+			this->queueFamilyIndexCount = static_cast<uint32_t>(this->queueFamilyIndices.size());
+			this->pQueueFamilyIndices = this->queueFamilyIndices.data();
+			this->imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+			return *this;
+		}
+
+		VkSurfaceFormatKHR HVKSwapchainCreateInfoKHR::sFindSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& surfaceFormats, VkFormat targetFormat)
+		{
+			for (auto& surFormat : surfaceFormats) {
+				surFormat.colorSpace;
+				if (surFormat.format == targetFormat) {
+					return surFormat;
+				}
+			}
+			return VkSurfaceFormatKHR{ VK_FORMAT_UNDEFINED, VK_COLORSPACE_SRGB_NONLINEAR_KHR };
+		}
+
+		const std::array<VkCompositeAlphaFlagBitsKHR, 4> HVKSwapchainCreateInfoKHR::sDefaultFlagsInSortedByPriority = { {
+			VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+			VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+			VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+			VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+		} };
 
 	}
 

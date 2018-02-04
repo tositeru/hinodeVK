@@ -32,10 +32,12 @@ namespace hinode
 			/// @exception HVKException
 			void create(VkDevice device, VkImageCreateInfo* pCreateInfo);
 
-			/// @brief すでに作成されたものを設定する
+			/// @brief スワップチェインのイメージを設定する
+			///
+			/// この関数で設定されたVkImageはrelease関数では破棄されません。
 			/// @param[in] device
 			/// @param[in] image
-			void set(VkDevice device, VkImage image);
+			void setSwapChainImage(VkDevice device, VkImage image);
 
 			/// @brief ビューの作成
 			/// @param[in] pInfo
@@ -49,6 +51,7 @@ namespace hinode
 			VkImageView& getView(int index);
 
 		private:
+			bool mIsSwapChainImage;
 			VkImage mImage;
 			VkDevice mParentDevice;
 			std::vector<VkImageView> mViews;

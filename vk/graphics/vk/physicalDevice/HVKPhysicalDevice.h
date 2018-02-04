@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <unordered_map>
 #include <vulkan\vulkan.h>
 
 #include "../HVKInterface.h"
@@ -34,7 +36,7 @@ namespace hinode
 
 			std::vector<VkSparseImageFormatProperties> getSparseImageFormatProperties(VkFormat format, VkImageType type, VkSampleCountFlagBits samples, VkImageUsageFlags usage, VkImageTiling tiling)noexcept;
 
-			std::vector<VkExtensionProperties> getDeviceExtensionProperties(const char* layerName=nullptr);
+			std::unordered_map<std::string, VkExtensionProperties> getDeviceExtensionProperties(const char* layerName = nullptr);
 
 		public:
 			bool isGood()const noexcept override;

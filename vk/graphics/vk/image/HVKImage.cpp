@@ -12,18 +12,20 @@ namespace hinode
 		{
 			std::vector<HVKImage> ret(count);
 			for (auto i = 0u; i < count; ++i) {
-				ret[i].set(device, images[i]);
+				ret[i].setSwapChainImage(device, images[i]);
 			}
 			return ret;
 		}
 
 		HVKImage::HVKImage()
-			: mImage(nullptr)
+			: mIsSwapChainImage(false)
+			, mImage(nullptr)
 			, mParentDevice(nullptr)
 		{ }
 
 		HVKImage::HVKImage(HVKImage&& right)noexcept
-			: mImage(right.mImage)
+			: mIsSwapChainImage(right.mIsSwapChainImage)
+			, mImage(right.mImage)
 			, mParentDevice(right.mParentDevice)
 		{
 			right.mImage = nullptr;
@@ -33,6 +35,7 @@ namespace hinode
 		HVKImage& HVKImage::operator=(HVKImage&& right)noexcept
 		{
 			this->release();
+			this->mIsSwapChainImage = right.mIsSwapChainImage;
 			this->mImage = right.mImage;
 			this->mParentDevice = right.mParentDevice;
 			this->mViews = right.mViews;
@@ -58,7 +61,10 @@ namespace hinode
 				this->mViews.clear();
 				this->mViews.shrink_to_fit();
 
-				vkDestroyImage(this->mParentDevice, this->mImage, this->allocationCallbacksPointer());
+				if (!this->mIsSwapChainImage) {
+					vkDestroyImage(this->mParentDevice, this->mImage, this->allocationCallbacksPointer());
+				}
+				this->mIsSwapChainImage = false;
 				this->mParentDevice = nullptr;
 				this->mImage = nullptr;
 			}
@@ -76,10 +82,11 @@ namespace hinode
 			this->mParentDevice = device;
 		}
 
-		void HVKImage::set(VkDevice device, VkImage image)
+		void HVKImage::setSwapChainImage(VkDevice device, VkImage image)
 		{
 			this->release();
 
+			this->mIsSwapChainImage = true;
 			this->mParentDevice = device;
 			this->mImage = image;
 		}

@@ -121,7 +121,7 @@ namespace hinode
 			return props;
 		}
 
-		std::vector<VkExtensionProperties> HVKPhysicalDevice::getDeviceExtensionProperties(const char* layerName)
+		std::unordered_map<std::string, VkExtensionProperties> HVKPhysicalDevice::getDeviceExtensionProperties(const char* layerName)
 		{
 			assert(this->isGood());
 
@@ -136,7 +136,11 @@ namespace hinode
 			if (VK_SUCCESS != ret) {
 				return {};
 			}
-			return deviceProps;
+			std::unordered_map<std::string, VkExtensionProperties> result;
+			for (auto& prop : deviceProps) {
+				result.insert({ std::string(prop.extensionName), prop });
+			}
+			return result;
 		}
 
 		bool HVKPhysicalDevice::isGood()const noexcept
