@@ -44,6 +44,8 @@ namespace hinode
 			/// @retval size_t
 			size_t addView(VkImageViewCreateInfo* pInfo);
 
+			VkMemoryRequirements getMemoryRequirements();
+
 		public:
 			bool isGood()const noexcept;
 			VkImage image()noexcept;
@@ -62,13 +64,24 @@ namespace hinode
 	{
 		struct HVKImageCreateInfo : public VkImageCreateInfo
 		{
-			HVKImageCreateInfo();
-		};
+			HVKImageCreateInfo()noexcept;
+			HVKImageCreateInfo(VkImageType type, VkFormat format, uint32_t width, uint32_t height, uint32_t depth)noexcept;
 
+			/// @brief égópÇ≈Ç´ÇÈÇ‡ÇÃÇ™Ç»ÇØÇÍÇŒ,VK_IMAGE_TILING_MAX_ENUMÇï‘ÇµÇ‹Ç∑ÅB
+			static VkImageTiling sCheckTiling(VkFormatProperties props, VkFormatFeatureFlagBits checkFlag)noexcept;
+
+			static uint32_t sCalMiplevel(uint32_t width, uint32_t height)noexcept;
+
+			static HVKImageCreateInfo sMake2D(VkFormat format, uint32_t width, uint32_t height)noexcept;
+		};
+	}
+
+	namespace graphics
+	{
 		struct HVKImageViewCreateInfo : public VkImageViewCreateInfo
 		{
 			HVKImageViewCreateInfo();
-			HVKImageViewCreateInfo(VkImageViewType viewType, VkFormat format);
+			HVKImageViewCreateInfo(VkImageViewType viewType, VkFormat format, VkImageAspectFlagBits aspectFlag);
 		};
 	}
 }

@@ -70,7 +70,15 @@ namespace hinode
 			HVKInstanceCreateInfo& setEnableExtensionInfo(const char** names, uint32_t extensionCount)noexcept;
 			HVKInstanceCreateInfo& setEnableExtensionInfo(const VkExtensionProperties* props, uint32_t extensionCount)noexcept;
 
+			/// @brief ppEnabledExtensionNamesとenabledExtensionCountを現在のextensionNamesのもので設定する
+			/// @retval HVKInstanceCreateInfo
+			HVKInstanceCreateInfo& updateEnableExtensionInfo()noexcept;
+
 			HVKInstanceCreateInfo& setEnableLayerNames(const char** names, uint32_t layerCount)noexcept;
+
+			/// @brief ppEnabledLayerNamesとenabledLayerCountを現在のlayerNamesのもので設定する
+			/// @retval HVKInstanceCreateInfo
+			HVKInstanceCreateInfo& updateEnableLayerNames()noexcept;
 		};
 	}
 

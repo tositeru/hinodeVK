@@ -143,6 +143,13 @@ namespace hinode
 			return *this;
 		}
 
+		HVKInstanceCreateInfo& HVKInstanceCreateInfo::updateEnableExtensionInfo()noexcept
+		{
+			this->enabledExtensionCount = static_cast<uint32_t>(this->extensionNames.size());
+			this->ppEnabledExtensionNames = this->extensionNames.data();
+			return *this;
+		}
+
 		HVKInstanceCreateInfo& HVKInstanceCreateInfo::setEnableLayerNames(const char** names, uint32_t layerCount)noexcept
 		{
 			this->layerNames.resize(layerCount);
@@ -156,6 +163,14 @@ namespace hinode
 
 			return *this;
 		}
+
+		HVKInstanceCreateInfo& HVKInstanceCreateInfo::updateEnableLayerNames()noexcept
+		{
+			this->enabledLayerCount = static_cast<uint32_t>(this->layerNames.size());
+			this->ppEnabledLayerNames = this->layerNames.data();
+			return *this;
+		}
+
 	}
 
 	namespace graphics
