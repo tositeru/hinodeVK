@@ -28,6 +28,10 @@ namespace hinode
 			void create(VkDevice device, VkMemoryAllocateInfo* pInfo);
 
 			VkResult bindImage(VkImage image, VkDeviceSize offset = 0);
+			VkResult bindBuffer(VkBuffer buffer, VkDeviceSize offset = 0);
+
+			VkResult map(void** ppOutPointer, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags);
+			void unmap();
 
 		public:
 			bool isGood()const noexcept override;

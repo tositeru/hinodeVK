@@ -181,9 +181,12 @@
     <ClInclude Include="graphics\vk\KHR\swapChain\HVKSwapChainKHR.h" />
     <ClInclude Include="graphics\vk\physicalDevice\HVKPhysicalDevice.h" />
     <ClInclude Include="graphics\vk\utility\InstanceWraper\InstanceWraper.h" />
+    <ClInclude Include="graphics\vk\utility\math\SimpleGeometry.h" />
+    <ClInclude Include="graphics\vk\utility\math\SimpleMath.h" />
     <ClInclude Include="graphics\vk\utility\winapi\CheckMemoryLeak.h" />
     <ClInclude Include="graphics\vk\utility\winapi\KeyObserver.h" />
     <ClInclude Include="graphics\vk\utility\winapi\Window.h" />
+    <ClInclude Include="graphics\vk\buffer\HVKBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics\vk\allocationCallbacks\HVKAllocationCallbacks.cpp" />
@@ -200,6 +203,7 @@
     <ClCompile Include="graphics\vk\physicalDevice\HVKPhysicalDevice.cpp" />
     <ClCompile Include="graphics\vk\utility\winapi\CheckMemoryLeak.cpp" />
     <ClCompile Include="graphics\vk\utility\winapi\Window.cpp" />
+    <ClCompile Include="graphics\vk\buffer\HVKBuffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

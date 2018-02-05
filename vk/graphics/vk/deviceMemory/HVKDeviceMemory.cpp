@@ -37,7 +37,7 @@ namespace hinode
 
 		void HVKDeviceMemory::release()noexcept
 		{
-			if (nullptr == this->mMemory) {
+			if (nullptr != this->mMemory) {
 				vkFreeMemory(this->mParentDevice, this->mMemory, this->allocationCallbacksPointer());
 				this->mParentDevice = nullptr;
 				this->mMemory = nullptr;
@@ -60,6 +60,24 @@ namespace hinode
 			return vkBindImageMemory(this->mParentDevice, image, this->mMemory, offset);
 		}
 
+		VkResult HVKDeviceMemory::bindBuffer(VkBuffer buffer, VkDeviceSize offset)
+		{
+			assert(this->isGood());
+			return vkBindBufferMemory(this->mParentDevice, buffer, this->mMemory, offset);
+		}
+
+		VkResult HVKDeviceMemory::map(void** ppOutPointer, VkDeviceSize offset, VkDeviceSize size, VkMemoryMapFlags flags)
+		{
+			assert(this->isGood());
+			return vkMapMemory(this->mParentDevice, this->mMemory, offset, size, flags, ppOutPointer);
+		}
+
+		void HVKDeviceMemory::unmap()
+		{
+			assert(this->isGood());
+			vkUnmapMemory(this->mParentDevice, this->mMemory);
+		}
+
 		bool HVKDeviceMemory::isGood()const noexcept
 		{
 			return this->mMemory != nullptr && this->mParentDevice != nullptr;
@@ -80,8 +98,8 @@ namespace hinode
 
 		HVKMemoryAllocateInfo::HVKMemoryAllocateInfo(VkDeviceSize allocationSize, uint32_t memoryTypeIndex)
 		{
-			this->allocationSize = 0;
-			this->memoryTypeIndex = 0;
+			this->allocationSize = allocationSize;
+			this->memoryTypeIndex = memoryTypeIndex;
 
 			// ˆÈ‰ºAŒÅ’è
 			this->sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -90,7 +108,7 @@ namespace hinode
 
 		uint32_t HVKMemoryAllocateInfo::sCheckMemmoryType(VkPhysicalDeviceMemoryProperties props, uint32_t typeBits, VkFlags requirementsMask)noexcept
 		{
-			uint32_t result = -1;
+			uint32_t result = static_cast<uint32_t >(-1);
 			// Search memtypes to find first index with those properties
 			for (uint32_t i = 0; i < props.memoryTypeCount; i++) {
 				if ((typeBits & 1) == 1) {

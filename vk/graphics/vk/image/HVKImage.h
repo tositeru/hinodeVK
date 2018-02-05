@@ -42,6 +42,7 @@ namespace hinode
 			/// @brief ƒrƒ…[‚Ìì¬
 			/// @param[in] pInfo
 			/// @retval size_t
+			/// @exception HVKException
 			size_t addView(VkImageViewCreateInfo* pInfo);
 
 			VkMemoryRequirements getMemoryRequirements();

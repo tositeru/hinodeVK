@@ -27,9 +27,12 @@ namespace hinode
 			: mIsSwapChainImage(right.mIsSwapChainImage)
 			, mImage(right.mImage)
 			, mParentDevice(right.mParentDevice)
+			, mViews(std::move(right.mViews))
 		{
 			right.mImage = nullptr;
 			right.mParentDevice = nullptr;
+			right.mViews.clear();
+			right.mViews.shrink_to_fit();
 		}
 
 		HVKImage& HVKImage::operator=(HVKImage&& right)noexcept

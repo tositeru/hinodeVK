@@ -11,6 +11,9 @@
 #include <graphics\vk\KHR\surface\HVKSurfaceKHR.h>
 #include <graphics\vk\image\HVKImage.h>
 #include <graphics\vk\deviceMemory\HVKDeviceMemory.h>
+#include <graphics\vk\buffer\HVKBuffer.h>
+
+#include <graphics\vk\utility\math\SimpleMath.h>
 
 #include "winapi\VKWindow\VKWindow.h"
 
@@ -19,6 +22,7 @@ using namespace std;
 int main(int argc, char** args)
 {
 	using namespace hinode::graphics;
+	using namespace hinode::math;
 
 	Log::sStandbyLogFile();
 
@@ -120,6 +124,8 @@ int main(int argc, char** args)
 			swapchainExtent = swapchainCreateInfo.imageExtent;
 		}
 
+		auto deviceMemoryProps = gpu.getMemoryProperties();
+
 		HVKImage depthBuffer;
 		HVKDeviceMemory depthBufferMemory;
 		{
@@ -130,7 +136,6 @@ int main(int argc, char** args)
 			assert(imageInfo.tiling != VK_IMAGE_TILING_MAX_ENUM);
 			depthBuffer.create(device, &imageInfo);
 
-			auto deviceMemoryProps = gpu.getMemoryProperties();
 			auto memoryRequirements = depthBuffer.getMemoryRequirements();
 			HVKMemoryAllocateInfo memAlloInfo;
 			memAlloInfo.allocationSize = memoryRequirements.size;
@@ -141,6 +146,30 @@ int main(int argc, char** args)
 
 			HVKImageViewCreateInfo viewInfo(VK_IMAGE_VIEW_TYPE_2D, imageInfo.format, VK_IMAGE_ASPECT_DEPTH_BIT);
 			depthBuffer.addView(&viewInfo);
+		}
+
+		HVKBuffer uniformBuf;
+		HVKDeviceMemory uniformBufMemory;
+		{
+			HVKBufferCreateInfo bufInfo(sizeof(float4x4), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			uniformBuf.create(device, &bufInfo);
+
+			auto memoryRequirements = uniformBuf.getMemoryRequirements();
+			HVKMemoryAllocateInfo memAllocInfo;
+			memAllocInfo.allocationSize = memoryRequirements.size;
+			memAllocInfo.memoryTypeIndex = HVKMemoryAllocateInfo::sCheckMemmoryType(deviceMemoryProps, memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			assert(memAllocInfo.memoryTypeIndex != -1);
+			uniformBufMemory.create(device, &memAllocInfo);
+
+			uint8_t* pData;
+			auto ret = uniformBufMemory.map((void**)&pData, 0, memoryRequirements.size, 0);
+			assert(VK_SUCCESS == ret);
+
+			//memcpy(pData, matrix, sizeof(matrix));
+
+			uniformBufMemory.unmap();
+
+			uniformBufMemory.bindBuffer(uniformBuf);
 		}
 
 		images.clear();
