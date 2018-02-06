@@ -171,6 +171,7 @@
     <ClInclude Include="graphics\vk\common\MacroUtility.h" />
     <ClInclude Include="graphics\vk\common\MetaProgramingUtility.h" />
     <ClInclude Include="graphics\vk\common\Pimpl.h" />
+    <ClInclude Include="graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.h" />
     <ClInclude Include="graphics\vk\deviceMemory\HVKDeviceMemory.h" />
     <ClInclude Include="graphics\vk\HVKInterface.h" />
     <ClInclude Include="graphics\vk\image\HVKImage.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="graphics\vk\KHR\surface\HVKSurfaceKHR.h" />
     <ClInclude Include="graphics\vk\KHR\swapChain\HVKSwapChainKHR.h" />
     <ClInclude Include="graphics\vk\physicalDevice\HVKPhysicalDevice.h" />
+    <ClInclude Include="graphics\vk\pipelineLayout\HVKPipelineLayout.h" />
     <ClInclude Include="graphics\vk\utility\InstanceWraper\InstanceWraper.h" />
     <ClInclude Include="graphics\vk\utility\math\SimpleGeometry.h" />
     <ClInclude Include="graphics\vk\utility\math\SimpleMath.h" />
@@ -194,6 +196,7 @@
     <ClCompile Include="graphics\vk\commandPool\HVKCommandPool.cpp" />
     <ClCompile Include="graphics\vk\common\HVKException.cpp" />
     <ClCompile Include="graphics\vk\common\Log.cpp" />
+    <ClCompile Include="graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.cpp" />
     <ClCompile Include="graphics\vk\deviceMemory\HVKDeviceMemory.cpp" />
     <ClCompile Include="graphics\vk\image\HVKImage.cpp" />
     <ClCompile Include="graphics\vk\instance\HVKInstance.cpp" />
@@ -201,6 +204,7 @@
     <ClCompile Include="graphics\vk\KHR\surface\HVKSurfaceKHR.cpp" />
     <ClCompile Include="graphics\vk\KHR\swapChain\HVKSwapChainKHR.cpp" />
     <ClCompile Include="graphics\vk\physicalDevice\HVKPhysicalDevice.cpp" />
+    <ClCompile Include="graphics\vk\pipelineLayout\HVKPipelineLayout.cpp" />
     <ClCompile Include="graphics\vk\utility\winapi\CheckMemoryLeak.cpp" />
     <ClCompile Include="graphics\vk\utility\winapi\Window.cpp" />
     <ClCompile Include="graphics\vk\buffer\HVKBuffer.cpp" />

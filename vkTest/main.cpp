@@ -12,6 +12,8 @@
 #include <graphics\vk\image\HVKImage.h>
 #include <graphics\vk\deviceMemory\HVKDeviceMemory.h>
 #include <graphics\vk\buffer\HVKBuffer.h>
+#include <graphics\vk\pipelineLayout\HVKPipelineLayout.h>
+#include <graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.h>
 
 #include <graphics\vk\utility\math\SimpleMath.h>
 
@@ -170,6 +172,21 @@ int main(int argc, char** args)
 			uniformBufMemory.unmap();
 
 			uniformBufMemory.bindBuffer(uniformBuf);
+		}
+
+		HVKDescriptorSetLayout descSetLayout;
+		HVKPipelineLayout pipelineLayout;
+		{
+			HVKDescriptorSetLayoutBinding layoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT);
+
+			HVKDescriptorSetLayoutCreateInfo descSetLayoutInfo(&layoutBinding, 1);
+			descSetLayout.create(device, &descSetLayoutInfo);
+
+			VkDescriptorSetLayout pLayouts[] = {
+				descSetLayout,
+			};
+			HVKPipelineLayoutCreateInfo pipelineLayoutInfo(pLayouts, 1);
+			pipelineLayout.create(device, &pipelineLayoutInfo);
 		}
 
 		images.clear();
