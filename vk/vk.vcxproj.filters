@@ -99,6 +99,12 @@
     <ClInclude Include="graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="graphics\vk\descriptorPool\HVKDescriptorPool.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\vk\descriptorSets\HVKDescriptorSets.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="graphics\vk\instance\HVKInstance.cpp">
@@ -150,6 +156,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\vk\descriptorPool\HVKDescriptorPool.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\vk\descriptorSets\HVKDescriptorSets.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

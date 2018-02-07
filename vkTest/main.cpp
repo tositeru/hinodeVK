@@ -14,6 +14,8 @@
 #include <graphics\vk\buffer\HVKBuffer.h>
 #include <graphics\vk\pipelineLayout\HVKPipelineLayout.h>
 #include <graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.h>
+#include <graphics\vk\descriptorPool\HVKDescriptorPool.h>
+#include <graphics\vk\descriptorSets\HVKDescriptorSets.h>
 
 #include <graphics\vk\utility\math\SimpleMath.h>
 
@@ -150,6 +152,7 @@ int main(int argc, char** args)
 			depthBuffer.addView(&viewInfo);
 		}
 
+		const VkDeviceSize uniformBufferSize = sizeof(float4x4);
 		HVKBuffer uniformBuf;
 		HVKDeviceMemory uniformBufMemory;
 		{
@@ -189,6 +192,30 @@ int main(int argc, char** args)
 			pipelineLayout.create(device, &pipelineLayoutInfo);
 		}
 
+		HVKDescriptorPool descPool;
+		HVKDescriptorSets descSets;
+		{
+			VkDescriptorPoolSize pool[] = {
+				HVKDescriptorPoolCreateInfo::sMakePoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1),
+			};
+			HVKDescriptorPoolCreateInfo poolInfo(pool, 1, 1);
+			descPool.create(device, &poolInfo);
+
+			VkDescriptorSetLayout pLayout[] = {
+				descSetLayout.descriptorSetLayout()
+			};
+			HVKDescriptorSetAllocateInfo descSetInfo(descPool, 1, pLayout);
+			descSets.create(device, descPool, descPool.enableFreeDescriptorSet(), &descSetInfo);
+
+			VkDescriptorBufferInfo bufferDescptor;
+			bufferDescptor.buffer = uniformBuf;
+			bufferDescptor.offset = 0;
+			bufferDescptor.range = uniformBufferSize;
+			auto  write = HVKWriteDescriptorSet()
+				.setDest(0, 0)
+				.setBufferInfo(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, &bufferDescptor, 1);
+			descSets.update(0, &write, 1, nullptr, 0);
+		}
 		images.clear();
 
 		window.mainLoop();

@@ -171,7 +171,9 @@
     <ClInclude Include="graphics\vk\common\MacroUtility.h" />
     <ClInclude Include="graphics\vk\common\MetaProgramingUtility.h" />
     <ClInclude Include="graphics\vk\common\Pimpl.h" />
+    <ClInclude Include="graphics\vk\descriptorPool\HVKDescriptorPool.h" />
     <ClInclude Include="graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.h" />
+    <ClInclude Include="graphics\vk\descriptorSets\HVKDescriptorSets.h" />
     <ClInclude Include="graphics\vk\deviceMemory\HVKDeviceMemory.h" />
     <ClInclude Include="graphics\vk\HVKInterface.h" />
     <ClInclude Include="graphics\vk\image\HVKImage.h" />
@@ -196,7 +198,9 @@
     <ClCompile Include="graphics\vk\commandPool\HVKCommandPool.cpp" />
     <ClCompile Include="graphics\vk\common\HVKException.cpp" />
     <ClCompile Include="graphics\vk\common\Log.cpp" />
+    <ClCompile Include="graphics\vk\descriptorPool\HVKDescriptorPool.cpp" />
     <ClCompile Include="graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.cpp" />
+    <ClCompile Include="graphics\vk\descriptorSets\HVKDescriptorSets.cpp" />
     <ClCompile Include="graphics\vk\deviceMemory\HVKDeviceMemory.cpp" />
     <ClCompile Include="graphics\vk\image\HVKImage.cpp" />
     <ClCompile Include="graphics\vk\instance\HVKInstance.cpp" />
