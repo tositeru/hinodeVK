@@ -16,6 +16,8 @@
 #include <graphics\vk\descriptorSetLayout\HVKDescriptorSetLayout.h>
 #include <graphics\vk\descriptorPool\HVKDescriptorPool.h>
 #include <graphics\vk\descriptorSets\HVKDescriptorSets.h>
+#include <graphics\vk\semaphore\HVKSemaphore.h>
+#include <graphics\vk\renderPass\HVKRenderPass.h>
 
 #include <graphics\vk\utility\math\SimpleMath.h>
 
@@ -104,6 +106,7 @@ int main(int argc, char** args)
 			commandBuffer.create(device, &commandBufferInfo);
 		}
 
+		VkFormat surfaceFormat;
 		VkExtent2D swapchainExtent;
 		HVKSwapChainKHR swapchain;
 		std::vector<HVKImage> images;
@@ -116,6 +119,7 @@ int main(int argc, char** args)
 				swapchainCreateInfo.setQueueFamilyIndices({ queueInfo.queueFamilyIndex, queueInfo.presentQueueFamilyIndex });
 			}
 			swapchain.create(device, &swapchainCreateInfo);
+			surfaceFormat = swapchainCreateInfo.imageFormat;
 
 			std::vector<VkImage> rawImages = swapchain.getAllImages();
 			images = HVKImage::sConvert(device, rawImages.data(), static_cast<uint32_t>(rawImages.size()));
@@ -130,6 +134,7 @@ int main(int argc, char** args)
 
 		auto deviceMemoryProps = gpu.getMemoryProperties();
 
+		VkFormat depthFormat;
 		HVKImage depthBuffer;
 		HVKDeviceMemory depthBufferMemory;
 		{
@@ -139,6 +144,7 @@ int main(int argc, char** args)
 			imageInfo.tiling = HVKImageCreateInfo::sCheckTiling(formatProps, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 			assert(imageInfo.tiling != VK_IMAGE_TILING_MAX_ENUM);
 			depthBuffer.create(device, &imageInfo);
+			depthFormat = imageInfo.format;
 
 			auto memoryRequirements = depthBuffer.getMemoryRequirements();
 			HVKMemoryAllocateInfo memAlloInfo;
@@ -216,6 +222,41 @@ int main(int argc, char** args)
 				.setBufferInfo(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, &bufferDescptor, 1);
 			descSets.update(0, &write, 1, nullptr, 0);
 		}
+
+		HVKSemaphore semaphore;
+		HVKRenderPass renderPass;
+		{
+			HVKSemaphoreCreateInfo semaphoreInfo;
+			semaphore.create(device, &semaphoreInfo);
+
+			HVKRenderPassCreateInfo renderPassInfo;
+			renderPassInfo.attachments = {
+				HVKAttachmentDescription()
+					.setFormat(surfaceFormat)
+					.setSampleCount(VK_SAMPLE_COUNT_1_BIT)
+					.setOp(VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE)
+					.setLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+				HVKAttachmentDescription()
+					.setFormat(depthFormat)
+					.setSampleCount(VK_SAMPLE_COUNT_1_BIT)
+					.setOp(VK_ATTACHMENT_LOAD_OP_CLEAR, VK_ATTACHMENT_STORE_OP_STORE)
+					.setLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+			};
+
+			auto subpassDesc = HVKSubpassDescription().setPipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS);
+			subpassDesc.colorAttachments = { HVKAttachmentReference(0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
+			subpassDesc.depthAttachment = HVKAttachmentReference(0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+			subpassDesc.updateColorAttachments();
+
+			renderPassInfo.subpasses = { subpassDesc };
+			renderPassInfo
+				.updateAttachments()
+				.updateSubpasses();
+			renderPass.create(device, &renderPassInfo);
+		}
+
+		auto currentBackbufferIndex = swapchain.acquireNextImage(UINT64_MAX, semaphore, nullptr);
+
 		images.clear();
 
 		window.mainLoop();
