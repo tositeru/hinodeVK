@@ -130,6 +130,16 @@ namespace hinode
 			return rawImages;
 		}
 
+		uint32_t HVKSwapChainKHR::acquireNextImage(uint64_t timeout, VkSemaphore semaphore, VkFence fence)
+		{
+			uint32_t result;
+			auto ret = vkAcquireNextImageKHR(this->mParentDevice, this->mSwapChain, timeout, semaphore, fence, &result);
+			if (VK_SUCCESS != ret) {
+				throw HINODE_GRAPHICS_CREATE_EXCEPTION(HVKSwapChainKHR, acquireNextImage, ret);
+			}
+			return result;
+		}
+
 		bool HVKSwapChainKHR::isGood()const noexcept
 		{
 			return this->mSwapChain != nullptr && this->mParentDevice != nullptr;

@@ -58,6 +58,14 @@ namespace hinode
 			/// @retval std::vector<VkImage>
 			std::vector<VkImage> getAllImages();
 
+			/// @brief Present可能なイメージの添え字を返す
+			/// @param[in] timeout UINT64_MAXで無制限に待つ
+			/// @param[in] semaphore
+			/// @param[in] fence
+			/// @retval uint32_t
+			/// @exception HVKException
+			uint32_t acquireNextImage(uint64_t timeout, VkSemaphore semaphore, VkFence fence);
+
 		public:
 			bool isGood()const noexcept;
 			VkSwapchainKHR swapChain()noexcept;
